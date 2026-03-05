@@ -1,7 +1,8 @@
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+export const ORDER_WAREHOUSE_BASE = process.env.NEXT_PUBLIC_ORDER_WAREHOUSE_URL || 'http://10.248.110.1:8081';
+export const SHIPMENT_ANALYTICS_BASE = process.env.NEXT_PUBLIC_SHIPMENT_ANALYTICS_URL || 'http://10.248.110.5:8089';
 
-async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+async function apiFetch<T>(base: string, path: string, options?: RequestInit): Promise<T> {
+  const res = await fetch(`${base}${path}`, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   });
@@ -12,34 +13,34 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
-// Orders
+// Orders (port 8081)
 export const createOrder = (body: { customer_name: string; product: string; quantity: number }) =>
-  apiFetch<any>('/api/orders', { method: 'POST', body: JSON.stringify(body) });
+  apiFetch<any>(ORDER_WAREHOUSE_BASE, '/api/orders', { method: 'POST', body: JSON.stringify(body) });
 
-export const listOrders = () => apiFetch<any>('/api/orders');
-export const getOrder = (id: string) => apiFetch<any>(`/api/orders/${id}`);
+export const listOrders = () => apiFetch<any>(ORDER_WAREHOUSE_BASE, '/api/orders');
+export const getOrder = (id: string) => apiFetch<any>(ORDER_WAREHOUSE_BASE, `/api/orders/${id}`);
 
-// Warehouse
-export const getStock = () => apiFetch<any>('/api/warehouse/stock');
+// Warehouse (port 8081)
+export const getStock = () => apiFetch<any>(ORDER_WAREHOUSE_BASE, '/api/warehouse/stock');
 export const updateStock = (body: { product: string; quantity: number }) =>
-  apiFetch<any>('/api/warehouse/stock', { method: 'POST', body: JSON.stringify(body) });
+  apiFetch<any>(ORDER_WAREHOUSE_BASE, '/api/warehouse/stock', { method: 'POST', body: JSON.stringify(body) });
 export const simulateCrash = (duration_seconds?: number) =>
-  apiFetch<any>('/api/warehouse/crash', { method: 'POST', body: JSON.stringify({ duration_seconds: duration_seconds ?? 8 }) });
+  apiFetch<any>(ORDER_WAREHOUSE_BASE, '/api/warehouse/crash', { method: 'POST', body: JSON.stringify({ duration_seconds: duration_seconds ?? 8 }) });
 export const recoverWarehouse = () =>
-  apiFetch<any>('/api/warehouse/recover', { method: 'POST', body: JSON.stringify({}) });
-export const getWarehouseStatus = () => apiFetch<any>('/api/warehouse/status');
+  apiFetch<any>(ORDER_WAREHOUSE_BASE, '/api/warehouse/recover', { method: 'POST', body: JSON.stringify({}) });
+export const getWarehouseStatus = () => apiFetch<any>(ORDER_WAREHOUSE_BASE, '/api/warehouse/status');
 
-// Shipments
-export const listShipments = () => apiFetch<any>('/api/shipments');
+// Shipments (port 8089)
+export const listShipments = () => apiFetch<any>(SHIPMENT_ANALYTICS_BASE, '/api/shipments');
 export const dispatchShipment = (body: {
   order_id: string; customer_name: string; product: string; quantity: number; eventual_consistency?: boolean;
-}) => apiFetch<any>('/api/shipments', { method: 'POST', body: JSON.stringify(body) });
-export const trackShipment = (id: string) => apiFetch<any>(`/api/shipments/${id}`);
+}) => apiFetch<any>(SHIPMENT_ANALYTICS_BASE, '/api/shipments', { method: 'POST', body: JSON.stringify(body) });
+export const trackShipment = (id: string) => apiFetch<any>(SHIPMENT_ANALYTICS_BASE, `/api/shipments/${id}`);
 export const deliverShipment = (id: string) =>
-  apiFetch<any>(`/api/shipments/${id}/deliver`, { method: 'POST', body: JSON.stringify({}) });
+  apiFetch<any>(SHIPMENT_ANALYTICS_BASE, `/api/shipments/${id}/deliver`, { method: 'POST', body: JSON.stringify({}) });
 
-// Analytics
-export const getMetrics = () => apiFetch<any>('/api/analytics/metrics');
-export const getComparison = () => apiFetch<any>('/api/analytics/comparison');
+// Analytics (port 8089)
+export const getMetrics = () => apiFetch<any>(SHIPMENT_ANALYTICS_BASE, '/api/analytics/metrics');
+export const getComparison = () => apiFetch<any>(SHIPMENT_ANALYTICS_BASE, '/api/analytics/comparison');
 export const runLoadTest = (load_level: number) =>
-  apiFetch<any>('/api/analytics/loadtest', { method: 'POST', body: JSON.stringify({ load_level }) });
+  apiFetch<any>(SHIPMENT_ANALYTICS_BASE, '/api/analytics/loadtest', { method: 'POST', body: JSON.stringify({ load_level }) });
