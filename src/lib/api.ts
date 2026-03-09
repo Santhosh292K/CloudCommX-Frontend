@@ -1,5 +1,5 @@
-export const ORDER_WAREHOUSE_BASE = process.env.NEXT_PUBLIC_ORDER_WAREHOUSE_URL || 'http://10.248.110.1:8081';
-export const SHIPMENT_ANALYTICS_BASE = process.env.NEXT_PUBLIC_SHIPMENT_ANALYTICS_URL || 'http://10.248.110.5:8089';
+export const ORDER_WAREHOUSE_BASE = process.env.NEXT_PUBLIC_ORDER_WAREHOUSE_URL || 'http://localhost:8081';//10.248.110.1
+export const SHIPMENT_ANALYTICS_BASE = process.env.NEXT_PUBLIC_SHIPMENT_ANALYTICS_URL || 'http://localhost:8082';//10.248.110.117
 
 async function apiFetch<T>(base: string, path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${base}${path}`, {
